@@ -54,6 +54,19 @@ app.get('/api/pokemons', async (c) => {
 
 /*** リソースの更新 ***/
 app.put('/api/pokemons/:id', async (c) => {
+  const id = Number(c.req.param('id'));
+  if (isNaN(id) || !Number.isInterger(id)) {
+    c.status(400);
+    return c.json({ message: '更新したいポケモンのIDを正しく指定してください。' });
+  }
+  const pkmns = await kv.list({ prefix: ['pokemons'] });
+  let exeisted = false;
+  for await (const pkmn of pkmns) {
+    if (pkmn.value.id == id) {
+      exeisted = true;
+      break;
+    }
+  }
   return c.json({ path: c.req.path });
 });
 
